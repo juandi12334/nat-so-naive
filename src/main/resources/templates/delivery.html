@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Academic delivery · Not So Naive · UFPS</title>
+    <title>Not So Naive · Source code · UFPS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
         <div class="masthead__text">
             <p class="kicker">FRANCISCO DE PAULA SANTANDER UNIVERSITY</p>
             <p class="program">SYSTEMS ENGINEERING PROGRAM</p>
-            <h1>Academic delivery</h1>
+            <h1>Not So Naive</h1>
             <dl class="meta">
                 <div><dt>COURSE</dt><dd>ANALYSIS OF ALGORITHMS</dd></div>
                 <div><dt>ALGORITHM</dt><dd>NOT SO NAIVE</dd></div>
@@ -32,8 +32,7 @@
 <main class="wrap delivery">
     <section class="card">
         <h2>Source project (Maven · Apache NetBeans)</h2>
-        <p>Complete Java project of this simulator: <code>pom.xml</code>, sources, Thymeleaf templates, static
-            resources, JUnit tests, the SEED data-structure classes used and the Dockerfile used for deployment.</p>
+        <p>Download the simulator's source code here, then follow the steps described below.</p>
         <p th:if="${available}">
             <a class="btn btn--primary" href="#" th:href="@{'/delivery/' + ${archiveName}}"
                th:text="'Download ' + ${archiveName}">Download ZIP</a>

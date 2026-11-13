@@ -159,17 +159,18 @@ public class PdfService {
         cs.addRect(36f, top + 8f, 4f, -40f);
         cs.fill();
 
-        text(cs, bold, 10.5f, INK, 48f, top,
-                "FRANCISCO DE PAULA SANTANDER UNIVERSITY  -  Systems Engineering Program  -  Analysis of Algorithms");
+        float maxWidth = PAGE_W - 48f - 36f;
+        fitText(cs, bold, 10.5f, INK, 48f, top, maxWidth,
+                "FRANCISCO DE PAULA SANTANDER UNIVERSITY  -  Systems Engineering Program");
+        fitText(cs, regular, 8.5f, INK, 48f, top - 13f, maxWidth,
+                "Course: Analysis of Algorithms  |  Algorithm: Not So Naive  |  Student: Juan Diego Rojas Rey");
         String pattern = r.getPattern().length() > 40 ? r.getPattern().substring(0, 37) + "..." : r.getPattern();
         String file = r.getDocument().fileName().length() > 40
                 ? r.getDocument().fileName().substring(0, 37) + "..." : r.getDocument().fileName();
-        text(cs, regular, 9f, INK, 48f, top - 14f,
-                "Not So Naive  |  File: " + file + "  |  Pattern: \"" + pattern + "\"  |  Occurrences: "
-                        + r.getMatchCount());
-        text(cs, regular, 8f, MUTED, 48f, top - 27f,
-                "Student: Juan Diego Rojas Rey  |  k = " + r.getStatistics().getK() + ", ell = "
-                        + r.getStatistics().getEll() + "  |  Case-sensitive exact search, 0-based positions");
+        fitText(cs, regular, 8f, MUTED, 48f, top - 26f, maxWidth,
+                "File: " + file + "  |  Pattern: \"" + pattern + "\"  |  Occurrences: " + r.getMatchCount()
+                        + "  |  k = " + r.getStatistics().getK() + ", ell = " + r.getStatistics().getEll()
+                        + "  |  case-sensitive, 0-based positions");
         cs.setStrokingColor(0.85f, 0.85f, 0.87f);
         cs.setLineWidth(0.6f);
         cs.moveTo(36f, top - 36f);
@@ -188,6 +189,14 @@ public class PdfService {
         text(cs, regular, 7.5f, MUTED, 56f, 28.5f, legend);
         String pg = "Page " + page + " of " + total;
         text(cs, regular, 7.5f, MUTED, PAGE_W - 36f - regular.getStringWidth(pg) / 1000f * 7.5f, 28.5f, pg);
+    }
+
+    /** Draws a single line, reducing the font size if needed so it never exceeds maxWidth. */
+    static void fitText(PDPageContentStream cs, PDType1Font font, float size, float[] color,
+                        float x, float y, float maxWidth, String value) throws IOException {
+        float width = font.getStringWidth(value) / 1000f * size;
+        float fitted = width > maxWidth ? size * maxWidth / width : size;
+        text(cs, font, fitted, color, x, y, value);
     }
 
     private static void text(PDPageContentStream cs, PDType1Font font, float size, float[] color,

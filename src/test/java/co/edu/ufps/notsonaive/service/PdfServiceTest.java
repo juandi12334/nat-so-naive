@@ -109,8 +109,31 @@ class PdfServiceTest {
             assertTrue(extracted.contains("Line 1: the pattern NSN appears here NSNSN"));
             assertTrue(extracted.contains("Line 300: the pattern NSN appears here NSNSN"));
             assertTrue(extracted.contains("Occurrences: 900"));
+            assertTrue(extracted.contains("FRANCISCO DE PAULA SANTANDER UNIVERSITY"));
+            assertTrue(extracted.contains("Student: Juan Diego Rojas Rey"));
         }
         assertHighlightsMatchPositions(r, pdfService.layout(r));
+    }
+
+    @Test
+    void headerLinesFitInsideThePageEvenWithLongNames() throws Exception {
+        String longName = "a-very-long-file-name-for-the-sustentation-demo-2026.txt";
+        TextDocument doc = fileService.parse(longName, "some text".getBytes());
+        SearchResult r = searchService.search(doc, "x".repeat(200));
+        try (PDDocument pdf = Loader.loadPDF(pdfService.generate(r))) {
+            PDFTextStripper stripper = new PDFTextStripper() {
+                @Override
+                protected void writeString(String text, java.util.List<org.apache.pdfbox.text.TextPosition> positions)
+                        throws java.io.IOException {
+                    for (org.apache.pdfbox.text.TextPosition p : positions) {
+                        assertTrue(p.getXDirAdj() + p.getWidthDirAdj() <= PdfService.PAGE_W - 30f,
+                                "text overflows the right margin: " + text);
+                    }
+                    super.writeString(text, positions);
+                }
+            };
+            stripper.getText(pdf);
+        }
     }
 
     @Test

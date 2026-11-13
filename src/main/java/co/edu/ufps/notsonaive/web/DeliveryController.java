@@ -20,14 +20,20 @@ public class DeliveryController {
         this.archiveService = archiveService;
     }
 
-    @GetMapping("/entrega")
+    @GetMapping("/delivery")
     public String delivery(Model model) {
         model.addAttribute("available", archiveService.isAvailable());
         model.addAttribute("archiveName", ProjectArchiveService.ARCHIVE_NAME);
-        return "entrega";
+        return "delivery";
     }
 
-    @GetMapping("/entrega/" + ProjectArchiveService.ARCHIVE_NAME)
+    /** Former address of the delivery page, kept so links already shared keep working. */
+    @GetMapping({"/entrega", "/entrega/"})
+    public String legacyDelivery() {
+        return "redirect:/delivery";
+    }
+
+    @GetMapping({"/delivery/" + ProjectArchiveService.ARCHIVE_NAME, "/entrega/" + ProjectArchiveService.ARCHIVE_NAME})
     public ResponseEntity<byte[]> download() {
         if (!archiveService.isAvailable()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

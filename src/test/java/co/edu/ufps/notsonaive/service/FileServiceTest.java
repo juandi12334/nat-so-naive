@@ -22,7 +22,7 @@ class FileServiceTest {
         TextDocument doc = service.read(file("a.txt", "Hello\nWorld\n".getBytes(StandardCharsets.US_ASCII)));
         assertEquals("Hello\nWorld\n", doc.content());
         assertEquals(2, doc.lineCount());
-        assertTrue(doc.notices().isEmpty());
+        assertTrue(doc.notices().esVacia());
     }
 
     @Test
@@ -74,7 +74,7 @@ class FileServiceTest {
         TextDocument doc = service.read(file("w.txt", "a\r\nb\rc".getBytes()));
         assertEquals("a\nb\nc", doc.content());
         assertEquals(3, doc.lineCount());
-        assertFalse(doc.notices().isEmpty());
+        assertFalse(doc.notices().esVacia());
     }
 
     @Test
@@ -82,7 +82,7 @@ class FileServiceTest {
         byte[] withBom = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF, 'h', 'i'};
         TextDocument doc = service.read(file("bom.txt", withBom));
         assertEquals("hi", doc.content());
-        assertEquals(1, doc.notices().size());
+        assertEquals(1, doc.notices().getTamanio());
     }
 
     @Test

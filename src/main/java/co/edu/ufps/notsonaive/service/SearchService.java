@@ -5,9 +5,8 @@ import co.edu.ufps.notsonaive.algorithm.SearchStatistics;
 import co.edu.ufps.notsonaive.exception.InvalidPatternException;
 import co.edu.ufps.notsonaive.model.SearchResult;
 import co.edu.ufps.notsonaive.model.TextDocument;
+import co.edu.ufps.notsonaive.support.SeedCollections;
 import org.springframework.stereotype.Service;
-import ufps.util.colecciones_seed.ListaCD;
-import ufps.util.colecciones_seed.Secuencia;
 
 /**
  * Coordinates a search: validates the pattern, runs {@link NotSoNaive}
@@ -63,15 +62,6 @@ public class SearchService {
                 : matcher.search(text);
         long elapsed = System.nanoTime() - start;
 
-        return new SearchResult(document, validPattern, toSecuencia(stats.getPositions()), stats, elapsed);
-    }
-
-    /** Copies the list of occurrences into a SEED Secuencia of exact capacity. */
-    static Secuencia<Integer> toSecuencia(ListaCD<Integer> list) {
-        Secuencia<Integer> seq = new Secuencia<>(Math.max(1, list.getTamanio()));
-        for (Integer p : list) {
-            seq.insertar(p);
-        }
-        return seq;
+        return new SearchResult(document, validPattern, SeedCollections.toSecuencia(stats.getPositions()), stats, elapsed);
     }
 }

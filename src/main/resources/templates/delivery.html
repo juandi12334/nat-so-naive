@@ -14,13 +14,13 @@
     <div class="wrap masthead__inner">
         <div class="seal" aria-hidden="true"><span>ZIP</span></div>
         <div class="masthead__text">
-            <p class="kicker">UNIVERSIDAD FRANCISCO DE PAULA SANTANDER</p>
-            <p class="program">PROGRAMA DE INGENIERÍA DE SISTEMAS</p>
+            <p class="kicker">FRANCISCO DE PAULA SANTANDER UNIVERSITY</p>
+            <p class="program">SYSTEMS ENGINEERING PROGRAM</p>
             <h1>Academic delivery</h1>
             <dl class="meta">
-                <div><dt>ASIGNATURA</dt><dd>ANÁLISIS DE ALGORITMOS</dd></div>
-                <div><dt>ALGORITMO</dt><dd>NOT SO NAIVE</dd></div>
-                <div><dt>ESTUDIANTE</dt><dd>JUAN DIEGO ROJAS REY</dd></div>
+                <div><dt>COURSE</dt><dd>ANALYSIS OF ALGORITHMS</dd></div>
+                <div><dt>ALGORITHM</dt><dd>NOT SO NAIVE</dd></div>
+                <div><dt>STUDENT</dt><dd>JUAN DIEGO ROJAS REY</dd></div>
             </dl>
         </div>
         <nav class="masthead__nav" aria-label="Sections">
@@ -35,7 +35,7 @@
         <p>Complete Java project of this simulator: <code>pom.xml</code>, sources, Thymeleaf templates, static
             resources, JUnit tests, the SEED data-structure classes used and the Dockerfile used for deployment.</p>
         <p th:if="${available}">
-            <a class="btn btn--primary" href="#" th:href="@{'/entrega/' + ${archiveName}}"
+            <a class="btn btn--primary" href="#" th:href="@{'/delivery/' + ${archiveName}}"
                th:text="'Download ' + ${archiveName}">Download ZIP</a>
         </p>
         <p th:unless="${available}" class="errorbox">The project archive is not available on this server.</p>
@@ -54,8 +54,9 @@
 <pre class="code">src/main/java/co/edu/ufps/notsonaive/
   algorithm/  NotSoNaive, SearchStatistics, TraceStep
   service/    FileService, SearchService, PdfService, PdfLayoutEngine, ProjectArchiveService
-  web/        SearchController, DeliveryController, GlobalExceptionHandler
+  web/        SearchController, DeliveryController, SearchResponse, GlobalExceptionHandler
   model/      TextDocument, SearchResult
+  support/    SeedCollections (ListaCD -> Secuencia helpers)
   exception/  InvalidFileException, InvalidPatternException
 src/main/java/ufps/util/colecciones_seed/
   ListaCD, NodoD, IteratorLCD, Secuencia, ExceptionUFPS   (SEED - UFPS, unmodified)

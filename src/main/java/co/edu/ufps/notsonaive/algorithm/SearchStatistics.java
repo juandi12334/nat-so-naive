@@ -1,5 +1,6 @@
 package co.edu.ufps.notsonaive.algorithm;
 
+import co.edu.ufps.notsonaive.support.SeedCollections;
 import ufps.util.colecciones_seed.ListaCD;
 
 /**
@@ -71,11 +72,6 @@ public final class SearchStatistics {
 
     /** @return the positions copied into a plain array, in order */
     public int[] positionsArray() {
-        int[] out = new int[positions.getTamanio()];
-        int i = 0;
-        for (Integer p : positions) {
-            out[i++] = p;
-        }
-        return out;
+        return SeedCollections.toIntArray(positions);
     }
 }

@@ -5,11 +5,10 @@ import co.edu.ufps.notsonaive.model.TextDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ufps.util.colecciones_seed.ListaCD;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -82,11 +81,11 @@ public class FileService {
         if (bytes.length == 0) {
             throw new InvalidFileException("The file \"" + name + "\" is empty. It must contain text.");
         }
-        List<String> notices = new ArrayList<>();
+        ListaCD<String> notices = new ListaCD<>();
         int start = 0;
         if (startsWithBom(bytes)) {
             start = UTF8_BOM.length;
-            notices.add("A UTF-8 byte-order mark (BOM) at the start of the file was removed; "
+            notices.insertarAlFinal("A UTF-8 byte-order mark (BOM) at the start of the file was removed; "
                     + "the rest of the content is pure ASCII.");
         }
         if (start == bytes.length) {
@@ -124,7 +123,7 @@ public class FileService {
         String content = new String(bytes, start, bytes.length - start, StandardCharsets.US_ASCII);
         if (hasCr) {
             content = content.replace("\r\n", "\n").replace('\r', '\n');
-            notices.add("Line endings were normalized to LF (\\n). Positions refer to the normalized text.");
+            notices.insertarAlFinal("Line endings were normalized to LF (\\n). Positions refer to the normalized text.");
         }
         int lines = 1;
         for (int i = 0; i < content.length(); i++) {
@@ -135,7 +134,7 @@ public class FileService {
         if (content.endsWith("\n")) {
             lines--;
         }
-        return new TextDocument(name, bytes.length, content, Math.max(lines, 1), List.copyOf(notices));
+        return new TextDocument(name, bytes.length, content, Math.max(lines, 1), notices);
     }
 
     private static boolean startsWithBom(byte[] bytes) {

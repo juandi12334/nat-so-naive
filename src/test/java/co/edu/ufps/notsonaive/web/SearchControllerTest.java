@@ -30,7 +30,9 @@ class SearchControllerTest {
     void homePageShowsAcademicHeader() throws Exception {
         mvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("UNIVERSIDAD FRANCISCO DE PAULA SANTANDER")))
+                .andExpect(content().string(containsString("FRANCISCO DE PAULA SANTANDER UNIVERSITY")))
+                .andExpect(content().string(containsString("SYSTEMS ENGINEERING PROGRAM")))
+                .andExpect(content().string(containsString("ANALYSIS OF ALGORITHMS")))
                 .andExpect(content().string(containsString("JUAN DIEGO ROJAS REY")))
                 .andExpect(content().string(containsString("NOT SO NAIVE")));
     }
@@ -48,6 +50,14 @@ class SearchControllerTest {
                 .andExpect(jsonPath("$.ell").value(2))
                 .andExpect(jsonPath("$.elapsedMillis").exists())
                 .andExpect(jsonPath("$.trace").isArray());
+    }
+
+    @Test
+    void pageContainsNoSpanishHeaderText() throws Exception {
+        String html = mvc.perform(get("/")).andReturn().getResponse().getContentAsString();
+        for (String spanish : new String[]{"UNIVERSIDAD", "PROGRAMA DE", "ASIGNATURA", "ALGORITMO", "ESTUDIANTE"}) {
+            org.junit.jupiter.api.Assertions.assertFalse(html.contains(spanish), spanish);
+        }
     }
 
     @Test
@@ -81,9 +91,11 @@ class SearchControllerTest {
 
     @Test
     void deliveryPageAndZip() throws Exception {
-        mvc.perform(get("/entrega")).andExpect(status().isOk())
+        mvc.perform(get("/delivery")).andExpect(status().isOk())
                 .andExpect(content().string(containsString("not-so-naive-project.zip")));
-        mvc.perform(get("/entrega/not-so-naive-project.zip"))
+        mvc.perform(get("/entrega")).andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/delivery"));
+        mvc.perform(get("/delivery/not-so-naive-project.zip"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/zip"));
     }

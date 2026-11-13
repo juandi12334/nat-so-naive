@@ -10,13 +10,13 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.springframework.stereotype.Service;
+import ufps.util.colecciones_seed.ListaCD;
+import ufps.util.colecciones_seed.Secuencia;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * Generates, with Apache PDFBox, a real PDF document containing the full text
@@ -58,16 +58,16 @@ public class PdfService {
     /** @return the PDF bytes */
     public byte[] generate(SearchResult result) {
         PdfLayoutEngine.Layout layout = layout(result);
-        List<String> lines = layout.lines();
-        int totalPages = Math.max(1, (lines.size() + LINES_PER_PAGE - 1) / LINES_PER_PAGE);
+        Secuencia<String> lines = layout.lines();
+        int totalPages = Math.max(1, (lines.getTamanio() + LINES_PER_PAGE - 1) / LINES_PER_PAGE);
 
-        // bucket segments per page
-        List<List<PdfLayoutEngine.Segment>> perPage = new ArrayList<>(totalPages);
+        // bucket the highlight segments per page (SEED: Secuencia of ListaCD)
+        Secuencia<ListaCD<PdfLayoutEngine.Segment>> perPage = new Secuencia<>(totalPages);
         for (int i = 0; i < totalPages; i++) {
-            perPage.add(new ArrayList<>());
+            perPage.insertar(new ListaCD<>());
         }
         for (PdfLayoutEngine.Segment s : layout.segments()) {
-            perPage.get(s.line() / LINES_PER_PAGE).add(s);
+            perPage.get(s.line() / LINES_PER_PAGE).insertarAlFinal(s);
         }
 
         PDType1Font courier = new PDType1Font(Standard14Fonts.FontName.COURIER);
@@ -92,7 +92,7 @@ public class PdfService {
                 try (PDPageContentStream cs = new PDPageContentStream(doc, pdPage)) {
                     drawHeader(cs, result, helvetica, helveticaBold);
                     int first = page * LINES_PER_PAGE;
-                    int last = Math.min(lines.size(), first + LINES_PER_PAGE);
+                    int last = Math.min(lines.getTamanio(), first + LINES_PER_PAGE);
 
                     // 1) highlights under the text
                     cs.saveGraphicsState();
@@ -160,7 +160,7 @@ public class PdfService {
         cs.fill();
 
         text(cs, bold, 10.5f, INK, 48f, top,
-                "UNIVERSIDAD FRANCISCO DE PAULA SANTANDER  -  Systems Engineering  -  Analysis of Algorithms");
+                "FRANCISCO DE PAULA SANTANDER UNIVERSITY  -  Systems Engineering Program  -  Analysis of Algorithms");
         String pattern = r.getPattern().length() > 40 ? r.getPattern().substring(0, 37) + "..." : r.getPattern();
         String file = r.getDocument().fileName().length() > 40
                 ? r.getDocument().fileName().substring(0, 37) + "..." : r.getDocument().fileName();

@@ -1,9 +1,8 @@
 package co.edu.ufps.notsonaive.service;
 
+import co.edu.ufps.notsonaive.support.SeedCollections;
+import ufps.util.colecciones_seed.ListaCD;
 import ufps.util.colecciones_seed.Secuencia;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Pure layout logic for the PDF, separated from drawing so it can be tested.
@@ -20,6 +19,10 @@ import java.util.List;
  *   <li>Patterns cannot contain LF (they are single-line printable ASCII),
  *       so an occurrence never crosses a logical line break.</li>
  * </ul>
+ *
+ * <p>Support structures are SEED: visual lines are collected in a {@link ListaCD}
+ * and then stored in a {@link Secuencia} for O(1) access by line number;
+ * highlight segments are kept in a {@link ListaCD}.</p>
  */
 public final class PdfLayoutEngine {
 
@@ -38,12 +41,16 @@ public final class PdfLayoutEngine {
     }
 
     /**
-     * @param lines        visual lines (tabs already expanded)
-     * @param logicalLine  for each visual line, its 1-based source line number,
-     *                     or 0 when it is the continuation of a wrapped line
-     * @param segments     highlight segments, ordered by match then line
+     * @param lines       visual lines (tabs already expanded), SEED Secuencia
+     * @param logicalLine for each visual line, its 1-based source line number,
+     *                    or 0 when it is the continuation of a wrapped line
+     * @param segments    highlight segments ordered by match then line, SEED ListaCD
      */
-    public record Layout(List<String> lines, int[] logicalLine, List<Segment> segments) {
+    public record Layout(Secuencia<String> lines, int[] logicalLine, ListaCD<Segment> segments) {
+
+        public int lineCount() {
+            return lines.getTamanio();
+        }
     }
 
     private final int columns;
@@ -63,8 +70,8 @@ public final class PdfLayoutEngine {
         final int n = text.length();
         final int[] lineOf = new int[n];
         final int[] colOf = new int[n];
-        final List<String> lines = new ArrayList<>();
-        final List<Integer> logical = new ArrayList<>();
+        final ListaCD<String> lines = new ListaCD<>();
+        final ListaCD<Integer> logical = new ListaCD<>();
 
         StringBuilder current = new StringBuilder();
         int col = 0;
@@ -74,10 +81,10 @@ public final class PdfLayoutEngine {
         for (int i = 0; i < n; i++) {
             char c = text.charAt(i);
             if (c == '\n') {
-                lineOf[i] = lines.size();
+                lineOf[i] = lines.getTamanio();
                 colOf[i] = col;
-                lines.add(current.toString());
-                logical.add(continuation ? 0 : logicalNumber);
+                lines.insertarAlFinal(current.toString());
+                logical.insertarAlFinal(continuation ? 0 : logicalNumber);
                 current = new StringBuilder();
                 col = 0;
                 logicalNumber++;
@@ -86,14 +93,14 @@ public final class PdfLayoutEngine {
             }
             int width = c == '\t' ? TAB_SIZE - (col % TAB_SIZE) : 1;
             if (col + width > columns) { // wrap
-                lines.add(current.toString());
-                logical.add(continuation ? 0 : logicalNumber);
+                lines.insertarAlFinal(current.toString());
+                logical.insertarAlFinal(continuation ? 0 : logicalNumber);
                 current = new StringBuilder();
                 col = 0;
                 continuation = true;
                 width = c == '\t' ? TAB_SIZE : 1;
             }
-            lineOf[i] = lines.size();
+            lineOf[i] = lines.getTamanio();
             colOf[i] = col;
             if (c == '\t') {
                 current.append(" ".repeat(width));
@@ -103,11 +110,11 @@ public final class PdfLayoutEngine {
             col += width;
         }
         if (current.length() > 0 || n == 0 || continuation) {
-            lines.add(current.toString());
-            logical.add(continuation ? 0 : logicalNumber);
+            lines.insertarAlFinal(current.toString());
+            logical.insertarAlFinal(continuation ? 0 : logicalNumber);
         }
 
-        List<Segment> segments = new ArrayList<>();
+        ListaCD<Segment> segments = new ListaCD<>();
         for (int t = 0; t < positions.getTamanio(); t++) {
             int p = positions.get(t);
             int end = p + patternLength; // exclusive
@@ -116,16 +123,15 @@ public final class PdfLayoutEngine {
             int segEnd = colOf[p] + 1;
             for (int i = p + 1; i < end; i++) {
                 if (lineOf[i] != segLine) {
-                    segments.add(new Segment(t, p, segLine, segStart, segEnd));
+                    segments.insertarAlFinal(new Segment(t, p, segLine, segStart, segEnd));
                     segLine = lineOf[i];
                     segStart = colOf[i];
                 }
                 segEnd = colOf[i] + 1;
             }
-            segments.add(new Segment(t, p, segLine, segStart, segEnd));
+            segments.insertarAlFinal(new Segment(t, p, segLine, segStart, segEnd));
         }
 
-        int[] logicalArr = logical.stream().mapToInt(Integer::intValue).toArray();
-        return new Layout(lines, logicalArr, segments);
+        return new Layout(SeedCollections.toSecuencia(lines), SeedCollections.toIntArray(logical), segments);
     }
 }

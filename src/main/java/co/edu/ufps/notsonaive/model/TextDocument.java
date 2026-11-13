@@ -1,6 +1,6 @@
 package co.edu.ufps.notsonaive.model;
 
-import java.util.List;
+import ufps.util.colecciones_seed.ListaCD;
 
 /**
  * A validated ASCII text file, ready to be searched.
@@ -10,8 +10,8 @@ import java.util.List;
  * @param content   text with line endings normalized to LF ("\n")
  * @param lineCount number of lines in the normalized text
  * @param notices   informational messages about transformations applied
- *                  (e.g. CRLF normalization); empty when none
+ *                  (e.g. CRLF normalization), in a SEED list; empty when none
  */
 public record TextDocument(String fileName, long sizeBytes, String content, int lineCount,
-                           List<String> notices) {
+                           ListaCD<String> notices) {
 }

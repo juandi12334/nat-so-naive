@@ -1,6 +1,5 @@
 package co.edu.ufps.notsonaive.web;
 
-import co.edu.ufps.notsonaive.algorithm.TraceStep;
 import co.edu.ufps.notsonaive.model.SearchResult;
 import co.edu.ufps.notsonaive.model.TextDocument;
 import co.edu.ufps.notsonaive.service.FileService;
@@ -19,10 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Web endpoints. The controller only translates HTTP to service calls;
@@ -59,11 +54,11 @@ public class SearchController {
     @PostMapping(value = "/api/search", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Map<String, Object> search(@RequestParam(value = "file", required = false) MultipartFile file,
+    public SearchResponse search(@RequestParam(value = "file", required = false) MultipartFile file,
                                       @RequestParam(value = "pattern", required = false) String pattern) {
         TextDocument document = fileService.read(file);
         SearchResult result = searchService.search(document, pattern);
-        return toJson(result);
+        return SearchResponse.of(result, MAX_POSITIONS_IN_RESPONSE, MAX_PREVIEW_CHARS);
     }
 
     @PostMapping(value = "/api/pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -80,49 +75,5 @@ public class SearchController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
                 .header("X-Match-Count", Integer.toString(result.getMatchCount()))
                 .body(pdf);
-    }
-
-    private static Map<String, Object> toJson(SearchResult r) {
-        TextDocument doc = r.getDocument();
-        int count = r.getMatchCount();
-        int returned = Math.min(count, MAX_POSITIONS_IN_RESPONSE);
-        int[] positions = new int[returned];
-        for (int i = 0; i < returned; i++) {
-            positions[i] = r.getPositions().get(i);
-        }
-        boolean previewTruncated = doc.content().length() > MAX_PREVIEW_CHARS;
-
-        Map<String, Object> json = new LinkedHashMap<>();
-        json.put("algorithm", "Not So Naive");
-        json.put("fileName", doc.fileName());
-        json.put("fileSizeBytes", doc.sizeBytes());
-        json.put("textLength", doc.content().length());
-        json.put("lineCount", doc.lineCount());
-        json.put("pattern", r.getPattern());
-        json.put("patternLength", r.getPattern().length());
-        json.put("matchCount", count);
-        json.put("positions", positions);
-        json.put("positionsTruncated", returned < count);
-        json.put("elapsedMillis", r.getElapsedNanos() / 1_000_000.0);
-        json.put("comparisons", r.getStatistics().getComparisons());
-        json.put("attempts", r.getStatistics().getAttempts());
-        json.put("k", r.getStatistics().getK());
-        json.put("ell", r.getStatistics().getEll());
-        json.put("notices", doc.notices());
-        json.put("text", previewTruncated ? doc.content().substring(0, MAX_PREVIEW_CHARS) : doc.content());
-        json.put("previewTruncated", previewTruncated);
-        if (r.getStatistics().getTrace() != null) {
-            List<Map<String, Object>> steps = new ArrayList<>();
-            for (TraceStep s : r.getStatistics().getTrace()) {
-                Map<String, Object> step = new LinkedHashMap<>();
-                step.put("j", s.j());
-                step.put("outcome", s.outcome().name());
-                step.put("shift", s.shift());
-                step.put("comparisons", s.comparisons());
-                steps.add(step);
-            }
-            json.put("trace", steps);
-        }
-        return json;
     }
 }

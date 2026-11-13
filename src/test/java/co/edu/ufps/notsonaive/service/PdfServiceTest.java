@@ -6,10 +6,10 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+import ufps.util.colecciones_seed.ListaCD;
 import ufps.util.colecciones_seed.Secuencia;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,8 +76,8 @@ class PdfServiceTest {
         SearchResult r = search(text, "HELLO");
         PdfLayoutEngine.Layout layout = pdfService.layout(r);
         assertEquals(1, r.getMatchCount());
-        List<PdfLayoutEngine.Segment> segs = layout.segments();
-        assertEquals(2, segs.size());
+        ListaCD<PdfLayoutEngine.Segment> segs = layout.segments();
+        assertEquals(2, segs.getTamanio());
         assertEquals(0, segs.get(0).line());
         assertEquals(1, segs.get(1).line());
         assertEquals(0, layout.logicalLine()[1]); // continuation line

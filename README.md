@@ -1,6 +1,6 @@
 # Not So Naive — String Matching Simulator (UFPS)
 
-Universidad Francisco de Paula Santander · Systems Engineering · Analysis of Algorithms
+Francisco de Paula Santander University · Systems Engineering Program · Analysis of Algorithms
 Student: **Juan Diego Rojas Rey** · Algorithm: **Not So Naive**
 
 Web application (Java 21, Spring Boot, Thymeleaf, Apache PDFBox) that searches every occurrence of a
@@ -8,7 +8,7 @@ pattern in an uploaded ASCII `.txt` file using a hand-written implementation of 
 algorithm, highlights the occurrences on screen and generates a PDF with the same highlights.
 
 - Live: https://nat-so-naive.onrender.com
-- Source ZIP: https://nat-so-naive.onrender.com/entrega
+- Source ZIP: https://nat-so-naive.onrender.com/delivery
 
 ## Run in Apache NetBeans
 1. *File → Open Project* → select this folder (Maven project).
@@ -20,8 +20,9 @@ algorithm, highlights the occurrences on screen and generates a PDF with the sam
 |---|---|
 | `algorithm` | `NotSoNaive` (preprocessing k/ell, search phase), `SearchStatistics`, `TraceStep` |
 | `service` | `FileService` (ASCII validation), `SearchService`, `PdfService` + `PdfLayoutEngine`, `ProjectArchiveService` |
-| `web` | `SearchController` (`/`, `/api/search`, `/api/pdf`), `DeliveryController` (`/entrega`), `GlobalExceptionHandler` |
+| `web` | `SearchController` (`/`, `/api/search`, `/api/pdf`), `DeliveryController` (`/delivery`), `GlobalExceptionHandler` |
 | `model` | `TextDocument`, `SearchResult` |
+| `support` | `SeedCollections` (conversions between SEED structures) |
 | `ufps.util.colecciones_seed` | SEED classes (unmodified, from the UFPS SEED project): `ListaCD`, `NodoD`, `IteratorLCD`, `Secuencia`, `ExceptionUFPS` |
 
 ## Conventions
@@ -32,6 +33,7 @@ algorithm, highlights the occurrences on screen and generates a PDF with the sam
   occurrence that crosses a visual wrap of a long line is highlighted in two parts.
 
 ## SEED data structures
+All support data structures are SEED classes; the production code uses no `java.util` collections.
 - `ListaCD<Integer>` collects the positions during the search (`insertarAlFinal` is O(1) thanks to the circular header node).
 - `Secuencia<Integer>` (exact capacity) stores the final positions for O(1) indexed access (UI paging and PDF layout).
 

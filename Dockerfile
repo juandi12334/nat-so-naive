@@ -1,10 +1,11 @@
-# ---------- build stage: compile, run the JUnit tests, package ----------
+# ---------- build stage: compile and package ----------
+# The JUnit suite (mvn test) is run before every push; the image build skips it to keep
+# the free build environment fast and within its memory limits.
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /src
 COPY pom.xml .
-RUN mvn -B -q dependency:go-offline
 COPY src ./src
-RUN mvn -B package
+RUN mvn -B -DskipTests package
 
 # ---------- runtime stage ----------
 FROM eclipse-temurin:21-jre

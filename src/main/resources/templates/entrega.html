@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Academic delivery · Not So Naive · UFPS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css">
+</head>
+<body>
+<header class="masthead">
+    <div class="wrap masthead__inner">
+        <div class="seal" aria-hidden="true"><span>ZIP</span></div>
+        <div class="masthead__text">
+            <p class="kicker">UNIVERSIDAD FRANCISCO DE PAULA SANTANDER</p>
+            <p class="program">PROGRAMA DE INGENIERÍA DE SISTEMAS</p>
+            <h1>Academic delivery</h1>
+            <dl class="meta">
+                <div><dt>ASIGNATURA</dt><dd>ANÁLISIS DE ALGORITMOS</dd></div>
+                <div><dt>ALGORITMO</dt><dd>NOT SO NAIVE</dd></div>
+                <div><dt>ESTUDIANTE</dt><dd>JUAN DIEGO ROJAS REY</dd></div>
+            </dl>
+        </div>
+        <nav class="masthead__nav" aria-label="Sections">
+            <a href="/" th:href="@{/}">← Simulator</a>
+        </nav>
+    </div>
+</header>
+
+<main class="wrap delivery">
+    <section class="card">
+        <h2>Source project (Maven · Apache NetBeans)</h2>
+        <p>Complete Java project of this simulator: <code>pom.xml</code>, sources, Thymeleaf templates, static
+            resources, JUnit tests, the SEED data-structure classes used and the Dockerfile used for deployment.</p>
+        <p th:if="${available}">
+            <a class="btn btn--primary" href="#" th:href="@{'/entrega/' + ${archiveName}}"
+               th:text="'Download ' + ${archiveName}">Download ZIP</a>
+        </p>
+        <p th:unless="${available}" class="errorbox">The project archive is not available on this server.</p>
+
+        <h3>Open and run in NetBeans</h3>
+        <ol>
+            <li>Unzip the file and choose <em>File → Open Project</em> on the <code>not-so-naive</code> folder
+                (NetBeans recognizes Maven projects natively).</li>
+            <li>Use JDK 21 (<em>Project Properties → Build → Compile</em>).</li>
+            <li>Press <em>Run</em> (main class <code>co.edu.ufps.notsonaive.NotSoNaiveApplication</code>) and open
+                <code>http://localhost:8080</code>.</li>
+            <li>Run the tests with <em>Test Project</em> (or <code>mvn test</code>).</li>
+        </ol>
+
+        <h3>Project structure</h3>
+<pre class="code">src/main/java/co/edu/ufps/notsonaive/
+  algorithm/  NotSoNaive, SearchStatistics, TraceStep
+  service/    FileService, SearchService, PdfService, PdfLayoutEngine, ProjectArchiveService
+  web/        SearchController, DeliveryController, GlobalExceptionHandler
+  model/      TextDocument, SearchResult
+  exception/  InvalidFileException, InvalidPatternException
+src/main/java/ufps/util/colecciones_seed/
+  ListaCD, NodoD, IteratorLCD, Secuencia, ExceptionUFPS   (SEED - UFPS, unmodified)
+src/test/java/...  JUnit 5 tests</pre>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="wrap"><p>UFPS · Systems Engineering · Analysis of Algorithms · Juan Diego Rojas Rey</p></div>
+</footer>
+</body>
+</html>
